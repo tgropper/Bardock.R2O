@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Bardock.R2O
@@ -16,7 +17,14 @@ namespace Bardock.R2O
             {
                 var column = columns.ElementAt(i);
                 var element = row.ElementAt(i);
-                ConvertElement(column, element, result);
+                try
+                {
+                    ConvertElement(column, element, result);
+                }
+                catch (ConverterInvalidColumnNameException ex)
+                {
+                    throw new ConverterInvalidColumnNameException(column);
+                }
             }
             return result;
         }
@@ -30,6 +38,9 @@ namespace Bardock.R2O
             if (containerObjectIndex != -1)
             {
                 var objName = column.Substring(0, containerObjectIndex);
+                if (String.IsNullOrEmpty(objName))
+                    throw new ConverterInvalidColumnNameException();
+
                 if (!result.ContainsKey(objName))
                     result.Add(objName, new Dictionary<string, object>());
 

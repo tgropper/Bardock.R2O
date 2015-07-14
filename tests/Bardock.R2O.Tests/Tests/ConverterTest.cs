@@ -92,10 +92,11 @@ namespace Bardock.R2O.Tests.Tests
         [DefaultData]
         public void Convert_SimpleObjectWithRepeatedColumns_ShouldThrowRepeatedColumnException(Converter sut)
         {
+            var repeatedColumnName = "id";
             //Setup
             var columns = new List<string>() {
-                "id",
-                "id"
+                repeatedColumnName,
+                repeatedColumnName
             };
             var matrix = new List<List<object>>()
             {
@@ -107,7 +108,30 @@ namespace Bardock.R2O.Tests.Tests
 
             //Verify
             exercise.ShouldThrow<ConverterRepeatedColumnException>()
-                .Where(x => x.Message.Contains("id"));
+                .Where(x => x.Message.Contains(repeatedColumnName));
+        }
+
+        [Theory]
+        [DefaultData]
+        public void Convert_SimpleObjectWithRepeatedColumns_ShouldThrowInvalidColumnException(Converter sut)
+        {
+            var invalidColumnName = "address..zipCode";
+            //Setup
+            var columns = new List<string>() {
+                "id",
+                invalidColumnName
+            };
+            var matrix = new List<List<object>>()
+            {
+                new List<object>() { 1, 2605 }
+            };
+
+            //Exercise
+            Action exercise = () => sut.Convert(columns, matrix);
+
+            //Verify
+            exercise.ShouldThrow<ConverterInvalidColumnNameException>()
+                .Where(x => x.Message.Contains(invalidColumnName));
         }
 
         [Theory]
@@ -188,6 +212,7 @@ namespace Bardock.R2O.Tests.Tests
         [DefaultData]
         public void Convert_DynamicObjectWithRepeatedColumns_ShouldThrowRepeatedColumnException(Converter sut)
         {
+            var repeatedLabelName = "firstName";
             //Setup
             var columns = new List<string>() {
                 "id",
@@ -196,8 +221,8 @@ namespace Bardock.R2O.Tests.Tests
             };
             var matrix = new List<List<object>>()
             {
-                new List<object>() { 1, "firstName", "firstName1" },
-                new List<object>() { 1, "firstName", "firstName2" }
+                new List<object>() { 1, repeatedLabelName, "firstName1" },
+                new List<object>() { 1, repeatedLabelName, "firstName2" }
             };
 
             //Exercise
@@ -205,7 +230,7 @@ namespace Bardock.R2O.Tests.Tests
 
             //Verify
             exercise.ShouldThrow<ConverterRepeatedColumnException>()
-                .Where(x => x.Message.Contains("firstName"));
+                .Where(x => x.Message.Contains(repeatedLabelName));
         }
     }
 }
