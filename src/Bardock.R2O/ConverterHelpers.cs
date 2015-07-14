@@ -21,7 +21,7 @@ namespace Bardock.R2O
                 {
                     ConvertElement(column, element, result);
                 }
-                catch (ConverterInvalidColumnNameException ex)
+                catch (ConverterInvalidColumnNameException)
                 {
                     throw new ConverterInvalidColumnNameException(column);
                 }
@@ -30,32 +30,32 @@ namespace Bardock.R2O
         }
 
         internal static Dictionary<string, object> ConvertElement(
-            string column,
+            string fieldFullName,
             object value,
-            Dictionary<string, object> result)
+            Dictionary<string, object> @object)
         {
-            var containerObjectIndex = column.IndexOf('.');
-            if (containerObjectIndex != -1)
+            var containerFieldIndex = fieldFullName.IndexOf('.');
+            if (containerFieldIndex != -1)
             {
-                var objName = column.Substring(0, containerObjectIndex);
-                if (String.IsNullOrEmpty(objName))
+                var fieldName = fieldFullName.Substring(0, containerFieldIndex);
+                if (String.IsNullOrEmpty(fieldName))
                     throw new ConverterInvalidColumnNameException();
 
-                if (!result.ContainsKey(objName))
-                    result.Add(objName, new Dictionary<string, object>());
+                if (!@object.ContainsKey(fieldName))
+                    @object.Add(fieldName, new Dictionary<string, object>());
 
                 ConvertElement(
-                    column.Substring(containerObjectIndex + 1),
+                    fieldFullName.Substring(containerFieldIndex + 1),
                     value,
-                    (Dictionary<string, object>)result[objName]);
+                    (Dictionary<string, object>)@object[fieldName]);
             }
             else
             {
-                if (result.ContainsKey(column))
-                    throw new ConverterRepeatedColumnException(column);
-                result[column] = value;
+                if (@object.ContainsKey(fieldFullName))
+                    throw new ConverterRepeatedColumnException(fieldFullName);
+                @object[fieldFullName] = value;
             }
-            return result;
+            return @object;
         }
 
         internal static Dictionary<object, List<Dictionary<string, object>>> ConvertDynamicRows(IEnumerable<string> columns, IEnumerable<IEnumerable<object>> matrix)
@@ -77,37 +77,37 @@ namespace Bardock.R2O
 
         internal static Dictionary<string, object> ConvertDynamicObjectFields(object id, List<Dictionary<string, object>> fields)
         {
-            var convertedObject = new Dictionary<string, object>();
+            var @object = new Dictionary<string, object>();
 
-            fields.Insert(0, new Dictionary<string, object>() { { "label", "id" }, { "value", id } });
+            fields.Insert(0, new Dictionary<string, object>() { { "fieldFullName", "id" }, { "value", id } });
             foreach (var field in fields)
             {
-                ConvertDynamicObjectField(field["label"].ToString(), field["value"], convertedObject);
+                ConvertDynamicObjectField(field["name"].ToString(), field["value"], @object);
             }
-            return convertedObject;
+            return @object;
         }
 
-        internal static Dictionary<string, object> ConvertDynamicObjectField(string label, object value, Dictionary<string, object> convertedObject)
+        internal static Dictionary<string, object> ConvertDynamicObjectField(string fieldFullName, object value, Dictionary<string, object> @object)
         {
-            var objectIndex = label.IndexOf('.');
-            if (objectIndex != -1)
+            var containerFieldIndex = fieldFullName.IndexOf('.');
+            if (containerFieldIndex != -1)
             {
-                var objectName = label.Substring(0, objectIndex);
-                if (!convertedObject.ContainsKey(objectName))
-                    convertedObject.Add(objectName, new Dictionary<string, object>());
+                var fieldName = fieldFullName.Substring(0, containerFieldIndex);
+                if (!@object.ContainsKey(fieldName))
+                    @object.Add(fieldName, new Dictionary<string, object>());
 
                 ConvertDynamicObjectField(
-                    label.Substring(objectIndex + 1),
+                    fieldFullName.Substring(containerFieldIndex + 1),
                     value,
-                    (Dictionary<string, object>)convertedObject[objectName]);
+                    (Dictionary<string, object>)@object[fieldName]);
             }
             else
             {
-                if (convertedObject.ContainsKey(label))
-                    throw new ConverterRepeatedColumnException(label);
-                convertedObject[label] = value;
+                if (@object.ContainsKey(fieldFullName))
+                    throw new ConverterRepeatedColumnException(fieldFullName);
+                @object[fieldFullName] = value;
             }
-            return convertedObject;
+            return @object;
         }
 
         #endregion Helpers

@@ -24,7 +24,7 @@ namespace Bardock.R2O
         /// <summary>
         /// Converts the specified matrix into a Dictionary, that can be easily serialized into json or another type of object
         /// </summary>
-        /// <param name="columns">Matrix columns names, it must have this three columns: id, label and value</param>
+        /// <param name="columns">Matrix columns names, it must have this three columns: id, name and value</param>
         /// <param name="matrix">Matrix in bidimensional form</param>
         /// <returns>Converted object</returns>
         public IEnumerable<Dictionary<string, object>> ConvertDynamic(IEnumerable<string> columns, IEnumerable<IEnumerable<object>> matrix)

@@ -49,14 +49,14 @@ namespace Bardock.R2O
         /// <summary>
         /// Converts the specified matrix into a Dictionary, that can be easily serialized into json or another type of object
         /// </summary>
-        /// <param name="columns">Matrix columns names, it must have this three columns: id, label, value</param>
+        /// <param name="columns">Matrix columns names, it must have this three columns: id, name, value</param>
         /// <param name="matrix">Matrix in bidimensional form</param>
         /// <returns>Converted object</returns>
         /// <summary>
         /// It represents an object that its fields are built dynamically based on rows and not on columns
         /// </summary>
         /// <example>
-        ///     id      |   field   |   value
+        ///     id      |   name    |   value
         ///     1       |   "name"  |   "Ringo Starr"
         ///     1       |   "age"   |   26
         ///     1       |   "email" |   "ringo@starr.com"
@@ -74,7 +74,7 @@ namespace Bardock.R2O
         /// NOTE: first column (id) of matrix is used to group the object properties
         /// NOTE2: this objects can have nested objects inside:
         ///
-        ///     id      |   field                           |   value
+        ///     id      |   name                            |   value
         ///     1       |   "hasDogs"                       |   true
         ///     1       |   "address.street"                |   "Penny Lane"
         ///     1       |   "address.number"                |   2605

@@ -141,7 +141,7 @@ namespace Bardock.R2O.Tests.Tests
             //Setup
             var columns = new List<string>() {
                 "id",
-                "label",
+                "name",
                 "value"
             };
             var matrix = new List<List<object>>()
@@ -168,7 +168,7 @@ namespace Bardock.R2O.Tests.Tests
             //Setup
             var columns = new List<string>() {
                 "id",
-                "label",
+                "name",
                 "value"
             };
             var matrix = new List<List<object>>()
@@ -216,7 +216,7 @@ namespace Bardock.R2O.Tests.Tests
             //Setup
             var columns = new List<string>() {
                 "id",
-                "label",
+                "name",
                 "value"
             };
             var matrix = new List<List<object>>()
