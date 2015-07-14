@@ -92,8 +92,8 @@ namespace Bardock.R2O.Tests.Tests
         [DefaultData]
         public void Convert_SimpleObjectWithRepeatedColumns_ShouldThrowRepeatedColumnException(Converter sut)
         {
-            var repeatedColumnName = "id";
             //Setup
+            var repeatedColumnName = "id";
             var columns = new List<string>() {
                 repeatedColumnName,
                 repeatedColumnName
@@ -113,7 +113,7 @@ namespace Bardock.R2O.Tests.Tests
 
         [Theory]
         [DefaultData]
-        public void Convert_SimpleObjectWithRepeatedColumns_ShouldThrowInvalidColumnException(Converter sut)
+        public void Convert_SimpleObjectWithInvalidColumnName_ShouldThrowInvalidColumnException(Converter sut)
         {
             var invalidColumnName = "address..zipCode";
             //Setup
@@ -212,8 +212,8 @@ namespace Bardock.R2O.Tests.Tests
         [DefaultData]
         public void Convert_DynamicObjectWithRepeatedColumns_ShouldThrowRepeatedColumnException(Converter sut)
         {
-            var repeatedLabelName = "firstName";
             //Setup
+            var repeatedLabelName = "firstName";
             var columns = new List<string>() {
                 "id",
                 "name",
@@ -231,6 +231,30 @@ namespace Bardock.R2O.Tests.Tests
             //Verify
             exercise.ShouldThrow<ConverterRepeatedColumnException>()
                 .Where(x => x.Message.Contains(repeatedLabelName));
+        }
+
+        [Theory]
+        [DefaultData]
+        public void Convert_DynamicObjectWithInvalidColumnName_ShouldThrowInvalidColumnException(Converter sut)
+        {
+            //Setup
+            var invalidColumnName = "address..zipCode";
+            var columns = new List<string>() {
+                "id",
+                "name",
+                "value"
+            };
+            var matrix = new List<List<object>>()
+            {
+                new List<object>() { 1, invalidColumnName, "firstName1" }
+            };
+
+            //Exercise
+            Action exercise = () => sut.ConvertDynamic(columns, matrix);
+
+            //Verify
+            exercise.ShouldThrow<ConverterInvalidColumnNameException>()
+                .Where(x => x.Message.Contains(invalidColumnName));
         }
     }
 }

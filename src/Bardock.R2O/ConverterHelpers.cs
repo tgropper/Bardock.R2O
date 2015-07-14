@@ -79,10 +79,18 @@ namespace Bardock.R2O
         {
             var @object = new Dictionary<string, object>();
 
-            fields.Insert(0, new Dictionary<string, object>() { { "fieldFullName", "id" }, { "value", id } });
+            fields.Insert(0, new Dictionary<string, object>() { { "name", "id" }, { "value", id } });
             foreach (var field in fields)
             {
-                ConvertDynamicObjectField(field["name"].ToString(), field["value"], @object);
+                var fieldName = field["name"].ToString();
+                try
+                { 
+                    ConvertDynamicObjectField(fieldName, field["value"], @object);
+                }
+                catch (ConverterInvalidColumnNameException)
+                {
+                    throw new ConverterInvalidColumnNameException(fieldName);
+                }
             }
             return @object;
         }
@@ -93,6 +101,10 @@ namespace Bardock.R2O
             if (containerFieldIndex != -1)
             {
                 var fieldName = fieldFullName.Substring(0, containerFieldIndex);
+                
+                if (String.IsNullOrEmpty(fieldName))
+                    throw new ConverterInvalidColumnNameException();
+
                 if (!@object.ContainsKey(fieldName))
                     @object.Add(fieldName, new Dictionary<string, object>());
 
