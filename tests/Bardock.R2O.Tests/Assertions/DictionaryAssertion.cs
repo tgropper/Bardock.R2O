@@ -38,10 +38,12 @@ namespace Bardock.R2O.Tests.Assertions
                 }
                 else
                 {
-                    if (!typeof(IDictionary<string, object>).IsAssignableFrom(valueA.GetType()))
-                        ret = ret && valueA.Equals(valueB);
-                    else
+                    if (typeof(IDictionary<string, object>).IsAssignableFrom(valueA.GetType()))
                         ret = ret && IsEqual(valueA as IDictionary<string, object>, valueB as IDictionary<string, object>);
+                    else if (typeof(IEnumerable<IDictionary<string, object>>).IsAssignableFrom(valueA.GetType()))
+                        ret = ret && IsEqual(valueA as IEnumerable<IDictionary<string, object>>, valueB as IEnumerable<IDictionary<string, object>>);
+                    else
+                        ret = ret && valueA.Equals(valueB);
                 }
 
                 if (ret == false)
@@ -54,6 +56,30 @@ namespace Bardock.R2O.Tests.Assertions
                     return false;
             }
 
+            return ret;
+        }
+
+        private static bool IsEqual<TKey, TValue>(IEnumerable<IDictionary<TKey, TValue>> a, IEnumerable<IDictionary<TKey, TValue>> b)
+        {
+            if (a.Count() != b.Count())
+                return false;
+
+            bool ret = true;
+            foreach (var itemA in a)
+            {
+                bool isContained = false;
+                foreach (var itemB in b)
+                {
+                    isContained = isContained || IsEqual(itemA, itemB);
+                    if (isContained)
+                        continue;
+                }
+
+                ret = ret && isContained;
+
+                if (ret == false)
+                    return false;
+            }
             return ret;
         }
     }

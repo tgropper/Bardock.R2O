@@ -122,6 +122,30 @@ namespace Bardock.R2O
             return @object;
         }
 
+        /// <summary>
+        /// Returns the container element of the field leaf
+        /// </summary>
+        internal static Dictionary<string, object> GetLeafContainerElement(Dictionary<string, object> @object, string field)
+        {
+            var index = field.IndexOf('.');
+            if (index != -1)
+                return GetLeafContainerElement((Dictionary<string, object>)@object[field.Substring(0, index)], field.Substring(index + 1));
+            else
+                return @object;
+        }
+
+        /// <summary>
+        /// Returns the field leaf name
+        /// </summary>
+        internal static string GetLeafName(string field)
+        {
+            var index = field.LastIndexOf('.');
+            if (index != -1)
+                return field.Substring(index + 1);
+            else
+                return field;
+        }
+
         #endregion Helpers
     }
 }
